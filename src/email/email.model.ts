@@ -1,42 +1,34 @@
 import * as mongoose from 'mongoose';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-export interface ReceivedHop {
-  source: string | null;
-  destination: string | null;
-  timestamp: Date | null;
-}
-
-export interface IEmail {
+@Schema({ timestamps: true })
+export class Email extends Document {
+  @Prop({ type: String, required: true, index: true })
   subject: string;
+
+  @Prop({ type: String, required: true })
   from: string;
+
+  @Prop({ type: Date, required: true })
   date: Date;
+
+  @Prop({ type: String, required: true })
   body: string;
-  receivedChain?: ReceivedHop[];
-  senderESP?: string;
+
+  @Prop({ type: [String], default: [] })
+  receivedChain: string[];
+
+  @Prop({ type: String })
+  senderESP: string;
+
+  @Prop({ type: String })
   rawHeaders: string;
-  createdAt: Date;
-  updatedAt: Date;
+
+  @Prop({ type: mongoose.Schema.Types.Mixed, default: {} })
+  customData: Record<string, any>;
 }
 
-const EmailSchema = new mongoose.Schema<IEmail>(
-  {
-    subject: { type: String, required: true, index: true },
-    from: { type: String, required: true },
-    date: { type: Date, required: true },
-    body: { type: String, required: true },
-    receivedChain: [
-      {
-        source: { type: String, default: null },
-        destination: { type: String, default: null },
-        timestamp: { type: Date, default: null },
-      },
-    ],
-    senderESP: { type: String },
-    rawHeaders: { type: String },
-  },
-  { timestamps: true }
-);
-
-// Create or get the model
-export const EmailModel =
-  mongoose.models.Email || mongoose.model<IEmail>('Email', EmailSchema);
+export const EmailSchema = SchemaFactory.createForClass(Email);
+export type EmailDocument = Email & Document;
+export const EmailModel = mongoose.model<EmailDocument>('Email', EmailSchema);

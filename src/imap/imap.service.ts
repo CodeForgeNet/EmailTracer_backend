@@ -101,12 +101,12 @@ export class ImapService implements OnModuleInit {
     return 'Unknown ESP';
   }
 
-  async connectAndFetch(uniqueSubject?: string): Promise<{
+  async connectAndFetch(subjectToSearch?: string): Promise<{
     uniqueSubject: string;
     emails: Email[];
   }> {
     // Generate a unique subject if none provided
-    uniqueSubject = uniqueSubject || `LUCIDGROWTH-TEST-${Date.now()}`;
+    const uniqueSubject = subjectToSearch || `LUCIDGROWTH-TEST-${Date.now()}`;
     const emails: Email[] = [];
 
     const config = {
@@ -123,10 +123,14 @@ export class ImapService implements OnModuleInit {
 
     try {
       this.logger.log(
-        `Connecting to IMAP server: ${config.imap.host}:${config.imap.port}`
+        `Connecting to IMAP server: ${config.imap.host}:${config.imap.port}`,
       );
       this.logger.log(`Using email account: ${config.imap.user}`);
-      this.logger.log(`Searching for emails with subject: ${uniqueSubject}`);
+      if (subjectToSearch) {
+        this.logger.log(`Searching for emails with subject: ${subjectToSearch}`);
+      } else {
+        this.logger.log(`Searching for all new emails.`);
+      }
 
       const connection = await imaps.connect(config);
       this.logger.log('Successfully connected to IMAP server');
@@ -134,9 +138,11 @@ export class ImapService implements OnModuleInit {
       await connection.openBox('INBOX');
       this.logger.log('Successfully opened INBOX');
 
-      const searchCriteria = ['ALL'];
+      const searchCriteria = subjectToSearch
+        ? [['HEADER', 'SUBJECT', subjectToSearch]]
+        : ['ALL'];
       this.logger.log(
-        `Searching with criteria: ${JSON.stringify(searchCriteria)}`
+        `Searching with criteria: ${JSON.stringify(searchCriteria)}`,
       );
 
       const fetchOptions = { bodies: ['HEADER', 'TEXT', ''], markSeen: false };
@@ -148,11 +154,8 @@ export class ImapService implements OnModuleInit {
           const headerPart = res.parts.find((part) => part.which === 'HEADER');
           const headers = headerPart ? headerPart.body : null;
 
-          // Get raw headers for processing
-          // const rawHeaders = headerPart ? JSON.stringify(headerPart.body) : '';
           let rawHeaders = '';
           if (headerPart && headerPart.body) {
-            // Convert header object to string format
             Object.keys(headerPart.body).forEach((key) => {
               if (Array.isArray(headerPart.body[key])) {
                 headerPart.body[key].forEach((value) => {
@@ -164,37 +167,31 @@ export class ImapService implements OnModuleInit {
             });
           }
 
-          // Get the full message part
           const fullPart = res.parts.find((part) => part.which === '');
           const full = fullPart ? fullPart.body : null;
 
           let emailSubject = '';
 
-          // Try to get subject from header
           if (headers && headers.subject) {
             emailSubject = Array.isArray(headers.subject)
               ? headers.subject[0]
               : headers.subject;
             this.logger.log(
-              `Found email with subject from header: ${emailSubject}`
+              `Found email with subject from header: ${emailSubject}`,
             );
           }
 
-          // If we have a full message, parse it for more reliable data
           if (full) {
             const parsed = await simpleParser(full);
             emailSubject = parsed.subject || emailSubject;
 
             this.logger.log(
-              `Found email with subject from parser: ${emailSubject}`
+              `Found email with subject from parser: ${emailSubject}`,
             );
 
-            // If the subject matches our unique subject, process this email
-            if (emailSubject && emailSubject.includes(uniqueSubject)) {
-              // Parse the received chain
+            if (!subjectToSearch || (emailSubject && emailSubject.includes(subjectToSearch))) {
               const receivedChain = this.extractReceivedChain(rawHeaders);
 
-              // Detect the ESP
               const fromAddress =
                 parsed.from?.text ||
                 (headers?.from ? headers.from[0] : 'Unknown');
@@ -211,7 +208,7 @@ export class ImapService implements OnModuleInit {
 
               this.logger.log(`✅ MATCH FOUND! Subject: ${emailSubject}`);
               this.logger.log(
-                `Found received chain with ${receivedChain.length} hops`
+                `Found received chain with ${receivedChain.length} hops`,
               );
               this.logger.log(`Detected ESP: ${senderESP}`);
               emails.push(emailData);
@@ -223,7 +220,7 @@ export class ImapService implements OnModuleInit {
       }
 
       this.logger.log(
-        `Returning ${emails.length} emails with matching subject criteria`
+        `Returning ${emails.length} emails with matching subject criteria`,
       );
       connection.end();
       return { uniqueSubject, emails };

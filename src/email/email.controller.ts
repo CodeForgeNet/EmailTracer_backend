@@ -11,21 +11,21 @@ export class EmailController {
     return this.emailService.getConfig();
   }
 
+  // POST /email/check
+  @Post('check')
+  checkEmails() {
+    return this.emailService.checkEmails();
+  }
+
+  // GET /email/:id
+  @Get(':id')
+  getEmailById(@Param('id') id: string) {
+    return this.emailService.getResultById(id);
+  }
+
   // POST /email/recheck
   @Post('recheck')
-  triggerRecheck(@Query('subject') subject?: string) {
+  recheckEmails(@Query('subject') subject?: string) {
     return this.emailService.triggerManualRecheck(subject);
-  }
-
-  // GET /email/results
-  @Get('results')
-  getLatestResults(@Query('limit') limit?: number) {
-    return this.emailService.getLatestResults(limit);
-  }
-
-  // GET /email/results/:id
-  @Get('results/:id')
-  getResultById(@Param('id') id: string) {
-    return this.emailService.getResultById(id);
   }
 }
