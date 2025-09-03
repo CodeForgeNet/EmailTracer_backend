@@ -178,4 +178,14 @@ export class EmailService {
       return { error: 'Invalid email ID format' };
     }
   }
+
+  // Get emails by subject
+  async getResultsBySubject(subject: string) {
+    this.logger.log(`Fetching emails with subject: ${subject}`);
+    const emails = await this.emailModel.find({ subject: subject }).exec();
+    return {
+      count: emails.length,
+      emails: emails,
+    };
+  }
 }

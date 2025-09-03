@@ -23,9 +23,21 @@ export class EmailController {
     return this.emailService.getResultById(id);
   }
 
+  // GET /email/latest
+  @Get('latest')
+  getLatestEmails() {
+    return this.emailService.getLatestResults();
+  }
+
   // POST /email/recheck
   @Post('recheck')
   recheckEmails(@Query('subject') subject?: string) {
     return this.emailService.triggerManualRecheck(subject);
+  }
+
+  // GET /email/subject/:subject
+  @Get('subject/:subject')
+  getEmailsBySubject(@Param('subject') subject: string) {
+    return this.emailService.getResultsBySubject(subject);
   }
 }
