@@ -20,7 +20,7 @@ export class EmailService {
   private scheduleEmailChecks() {
     setInterval(() => {
       this.checkEmails();
-    }, 10 * 1000); // 5 minutes
+    }, 30 * 1000); // 30 seconds
   }
 
   // Periodic email check method

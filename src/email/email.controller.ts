@@ -17,16 +17,16 @@ export class EmailController {
     return this.emailService.checkEmails();
   }
 
-  // GET /email/:id
-  @Get(':id')
-  getEmailById(@Param('id') id: string) {
-    return this.emailService.getResultById(id);
-  }
-
   // GET /email/latest
   @Get('latest')
   getLatestEmails() {
     return this.emailService.getLatestResults();
+  }
+
+  // GET /email/:id
+  @Get(':id')
+  getEmailById(@Param('id') id: string) {
+    return this.emailService.getResultById(id);
   }
 
   // POST /email/recheck
