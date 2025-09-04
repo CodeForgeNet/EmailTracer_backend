@@ -95,10 +95,7 @@ let EmailService = EmailService_1 = class EmailService {
     }
     async getAllResults() {
         this.logger.log(`Fetching all email results`);
-        const emails = await this.emailModel
-            .find()
-            .sort({ createdAt: -1 })
-            .exec();
+        const emails = await this.emailModel.find().sort({ createdAt: -1 }).exec();
         return {
             count: emails.length,
             emails: emails,

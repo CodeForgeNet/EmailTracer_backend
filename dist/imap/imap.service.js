@@ -104,6 +104,8 @@ let ImapService = ImapService_1 = class ImapService {
                     return 'Gmail';
                 if (source.includes('microsoft') || source.includes('outlook'))
                     return 'Microsoft';
+                if (source.includes('icloud') || source.includes('apple'))
+                    return 'iCloud';
                 if (source.includes('yahoo'))
                     return 'Yahoo';
                 if (source.includes('amazonses'))
@@ -180,7 +182,8 @@ let ImapService = ImapService_1 = class ImapService {
                         const parsed = await (0, mailparser_1.simpleParser)(full);
                         emailSubject = parsed.subject || emailSubject;
                         this.logger.log(`Found email with subject from parser: ${emailSubject}`);
-                        if (!subjectToSearch || (emailSubject && emailSubject.includes(subjectToSearch))) {
+                        if (!subjectToSearch ||
+                            (emailSubject && emailSubject.includes(subjectToSearch))) {
                             const receivedChain = this.extractReceivedChain(rawHeaders);
                             const fromAddress = parsed.from?.text ||
                                 (headers?.from ? headers.from[0] : 'Unknown');

@@ -4,8 +4,10 @@ import { simpleParser } from 'mailparser';
 import * as dotenv from 'dotenv';
 import { connectMongo } from '../mongo/mongo';
 
+// Load environment variables from .env file
 dotenv.config();
 
+// Define the Email and ReceivedHop interfaces for structured email data
 export interface Email {
   subject: string;
   from: string;
@@ -21,10 +23,13 @@ export interface ReceivedHop {
   timestamp: Date | null;
 }
 
+// Main service class for IMAP email operations
 @Injectable()
 export class ImapService implements OnModuleInit {
+  // Logger for logging service events
   private readonly logger = new Logger(ImapService.name);
 
+  // Called when the module initializes; connects to MongoDB
   async onModuleInit() {
     try {
       await connectMongo();
@@ -34,7 +39,7 @@ export class ImapService implements OnModuleInit {
     }
   }
 
-  // Extract and parse the received chain from raw headers
+  // Extracts and parses the "Received" header chain from raw email headers
   extractReceivedChain(rawHeaders: string): ReceivedHop[] {
     const unfoldedLines: string[] = [];
     let currentLine = '';
@@ -90,6 +95,8 @@ export class ImapService implements OnModuleInit {
           return 'Gmail';
         if (source.includes('microsoft') || source.includes('outlook'))
           return 'Microsoft';
+        if (source.includes('icloud') || source.includes('apple'))
+          return 'iCloud';
         if (source.includes('yahoo')) return 'Yahoo';
         if (source.includes('amazonses')) return 'Amazon SES';
         if (source.includes('sendgrid')) return 'SendGrid';
@@ -123,11 +130,13 @@ export class ImapService implements OnModuleInit {
 
     try {
       this.logger.log(
-        `Connecting to IMAP server: ${config.imap.host}:${config.imap.port}`,
+        `Connecting to IMAP server: ${config.imap.host}:${config.imap.port}`
       );
       this.logger.log(`Using email account: ${config.imap.user}`);
       if (subjectToSearch) {
-        this.logger.log(`Searching for emails with subject: ${subjectToSearch}`);
+        this.logger.log(
+          `Searching for emails with subject: ${subjectToSearch}`
+        );
       } else {
         this.logger.log(`Searching for all new emails.`);
       }
@@ -142,7 +151,7 @@ export class ImapService implements OnModuleInit {
         ? [['HEADER', 'SUBJECT', subjectToSearch]]
         : ['ALL'];
       this.logger.log(
-        `Searching with criteria: ${JSON.stringify(searchCriteria)}`,
+        `Searching with criteria: ${JSON.stringify(searchCriteria)}`
       );
 
       const fetchOptions = { bodies: ['HEADER', 'TEXT', ''], markSeen: false };
@@ -177,7 +186,7 @@ export class ImapService implements OnModuleInit {
               ? headers.subject[0]
               : headers.subject;
             this.logger.log(
-              `Found email with subject from header: ${emailSubject}`,
+              `Found email with subject from header: ${emailSubject}`
             );
           }
 
@@ -186,10 +195,13 @@ export class ImapService implements OnModuleInit {
             emailSubject = parsed.subject || emailSubject;
 
             this.logger.log(
-              `Found email with subject from parser: ${emailSubject}`,
+              `Found email with subject from parser: ${emailSubject}`
             );
 
-            if (!subjectToSearch || (emailSubject && emailSubject.includes(subjectToSearch))) {
+            if (
+              !subjectToSearch ||
+              (emailSubject && emailSubject.includes(subjectToSearch))
+            ) {
               const receivedChain = this.extractReceivedChain(rawHeaders);
 
               const fromAddress =
@@ -208,7 +220,7 @@ export class ImapService implements OnModuleInit {
 
               this.logger.log(`✅ MATCH FOUND! Subject: ${emailSubject}`);
               this.logger.log(
-                `Found received chain with ${receivedChain.length} hops`,
+                `Found received chain with ${receivedChain.length} hops`
               );
               this.logger.log(`Detected ESP: ${senderESP}`);
               emails.push(emailData);
@@ -220,7 +232,7 @@ export class ImapService implements OnModuleInit {
       }
 
       this.logger.log(
-        `Returning ${emails.length} emails with matching subject criteria`,
+        `Returning ${emails.length} emails with matching subject criteria`
       );
       connection.end();
       return { uniqueSubject, emails };

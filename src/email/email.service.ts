@@ -36,45 +36,6 @@ export class EmailService {
     this.logger.log(`Check complete. Found ${result.emails.length} new emails`);
   }
 
-  // Save emails to database
-  //   private async saveEmailsToDB(emails: any[]) {
-  //     this.logger.log(`Attempting to save ${emails.length} emails.`);
-  //     for (const email of emails) {
-  //       this.logger.log(
-  //         `Checking for existing email with subject: ${email.subject}`
-  //       );
-  //       const exists = await this.emailModel
-  //         .findOne({
-  //           subject: email.subject,
-  //           from: email.from,
-  //           date: email.date,
-  //         })
-  //         .exec();
-
-  //       if (exists) {
-  //         this.logger.log(
-  //           `Email with subject: ${email.subject} already exists. Skipping.`
-  //         );
-  //       } else {
-  //         this.logger.log(
-  //           `Email with subject: ${email.subject} is new. Saving...`
-  //         );
-  //         const newEmail = new this.emailModel({
-  //           subject: email.subject,
-  //           from: email.from,
-  //           date: email.date,
-  //           body: email.body,
-  //           receivedChain: email.receivedChain || [],
-  //           senderESP: email.senderESP || 'Unknown',
-  //           rawHeaders: JSON.stringify(email.rawHeaders || {}),
-  //           customData: email.customData || {},
-  //         });
-
-  //         await newEmail.save();
-  //         this.logger.log(`Saved new email: ${email.subject}`);
-  //       }
-  //     }
-  //   }
   private async saveEmailsToDB(emails: any[]) {
     this.logger.log(`Attempting to save ${emails.length} emails.`);
     for (const email of emails) {
@@ -150,10 +111,7 @@ export class EmailService {
   // Get all processed emails
   async getAllResults() {
     this.logger.log(`Fetching all email results`);
-    const emails = await this.emailModel
-      .find()
-      .sort({ createdAt: -1 })
-      .exec();
+    const emails = await this.emailModel.find().sort({ createdAt: -1 }).exec();
 
     return {
       count: emails.length,
