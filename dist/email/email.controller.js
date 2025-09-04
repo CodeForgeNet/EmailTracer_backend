@@ -26,8 +26,8 @@ let EmailController = class EmailController {
     checkEmails() {
         return this.emailService.checkEmails();
     }
-    getLatestEmails() {
-        return this.emailService.getLatestResults();
+    getAllEmails() {
+        return this.emailService.getAllResults();
     }
     getEmailById(id) {
         return this.emailService.getResultById(id);
@@ -53,11 +53,11 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], EmailController.prototype, "checkEmails", null);
 __decorate([
-    (0, common_1.Get)('latest'),
+    (0, common_1.Get)('all'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], EmailController.prototype, "getLatestEmails", null);
+], EmailController.prototype, "getAllEmails", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),

@@ -147,13 +147,12 @@ export class EmailService {
     };
   }
 
-  // Get the latest processed emails (existing method)
-  async getLatestResults(limit = 10) {
-    this.logger.log(`Fetching latest ${limit} email results`);
+  // Get all processed emails
+  async getAllResults() {
+    this.logger.log(`Fetching all email results`);
     const emails = await this.emailModel
       .find()
       .sort({ createdAt: -1 })
-      .limit(limit)
       .exec();
 
     return {

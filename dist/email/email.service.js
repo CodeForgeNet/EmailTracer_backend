@@ -93,12 +93,11 @@ let EmailService = EmailService_1 = class EmailService {
             found: result.emails.length,
         };
     }
-    async getLatestResults(limit = 10) {
-        this.logger.log(`Fetching latest ${limit} email results`);
+    async getAllResults() {
+        this.logger.log(`Fetching all email results`);
         const emails = await this.emailModel
             .find()
             .sort({ createdAt: -1 })
-            .limit(limit)
             .exec();
         return {
             count: emails.length,

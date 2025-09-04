@@ -18,7 +18,7 @@ export declare class EmailService {
         subject: string;
         found: number;
     }>;
-    getLatestResults(limit?: number): Promise<{
+    getAllResults(): Promise<{
         count: number;
         emails: (import("mongoose").Document<unknown, {}, EmailDocument, {}, {}> & Email & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
             _id: unknown;

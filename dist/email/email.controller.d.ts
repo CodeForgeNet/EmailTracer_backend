@@ -7,7 +7,7 @@ export declare class EmailController {
         subject: string;
     };
     checkEmails(): Promise<void>;
-    getLatestEmails(): Promise<{
+    getAllEmails(): Promise<{
         count: number;
         emails: (import("mongoose").Document<unknown, {}, import("./email.model").EmailDocument, {}, {}> & import("./email.model").Email & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
             _id: unknown;

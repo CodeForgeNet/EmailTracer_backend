@@ -17,10 +17,10 @@ export class EmailController {
     return this.emailService.checkEmails();
   }
 
-  // GET /email/latest
-  @Get('latest')
-  getLatestEmails() {
-    return this.emailService.getLatestResults();
+  // GET /email/all
+  @Get('all')
+  getAllEmails() {
+    return this.emailService.getAllResults();
   }
 
   // GET /email/:id
