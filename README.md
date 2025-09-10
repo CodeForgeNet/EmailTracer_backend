@@ -1,4 +1,4 @@
-# LucidGrowth Backend
+# Email Tracer Backend
 
 This is the backend service for LucidGrowth, a NestJS-based application for checking and analyzing email deliverability. It connects to an IMAP server to fetch emails, parses them, and stores the results in a MongoDB database.
 
@@ -27,11 +27,11 @@ This is the backend service for LucidGrowth, a NestJS-based application for chec
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/your-username/lucidgrowth-backend.git
+    git clone git@github.com:CodeForgeNet/EmailTracer_backend.git
     ```
 2.  Navigate to the project directory:
     ```bash
-    cd lucidgrowth-backend
+    cd EmailTracer_backend
     ```
 3.  Install the dependencies:
     ```bash
